@@ -1,0 +1,62 @@
+# Editor backups
+*~
+*.bak
+*.swp
+*.orig
+
+# Intel Quartus build output
+output_files/
+db/
+incremental_db/
+simulation/
+hls/
+qdb/
+*.qpf.bak
+*.qsf.bak
+
+# Quartus compiled/generated files
+*.sof
+*.pof
+*.jic
+*.rbf
+*.ekp
+*.map
+*.fit
+*.sta
+*.asm
+*.tan
+*.pin
+*.rpt
+*.smsg
+*.summary
+*.jdi
+*.ppf
+*.sld
+*.dpf
+
+# Quartus IP generated files
+*.qip
+*.cmp
+*.bsf
+*.mif.rpt
+
+# Quartus timing
+*.sdc.rpt
+*.quartus
+
+# ModelSim / Questa simulation
+work/
+transcript
+vsim.wlf
+*.vcd
+*.wlf
+
+# Nios II / SOPC
+*.sopcinfo
+*.spd
+*.svd
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
