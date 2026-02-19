@@ -14,6 +14,8 @@ qdb/
 *.qpf.bak
 *.qsf.bak
 
+sofware/4col-vt100
+
 # Quartus compiled/generated files
 *.sof
 *.pof
