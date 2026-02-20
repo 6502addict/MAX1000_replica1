@@ -83,6 +83,16 @@ component BASIC
 	);
 end component;
 
+component INTBASIC
+	port (
+		clock    : in std_logic;
+		cs_n     : in std_logic;
+		address  : in  std_logic_vector(13 downto 0); 
+		data_out : out std_logic_vector(7 downto 0)
+	);
+end component;
+
+
 -- PERIPHERAL COMPONENTS
 
 component ACI is
@@ -167,9 +177,9 @@ begin
 						
 
 -- CPU PORT MAP
-	cpu: CPU_MX65           port map(main_clk        => main_clk,
-	                                 reset_n         => reset_n,
-	                                 cpu_reset_n     => cpu_reset_n,
+	cpu: CPU_MX65   port map(main_clk        => main_clk,
+	                         reset_n         => reset_n,
+	                         cpu_reset_n     => cpu_reset_n,
 									 phi2            => phi2,
 									 rw              => rw,
 									 vma             => vma,
@@ -187,53 +197,61 @@ begin
 											  
 
 woz65: if ROM = "WOZMON65"  generate
-	rom: WOZMON65          port map(clock           => phi2,
+	rom: WOZMON65    port map(clock           => phi2,
 							        cs_n            => rom_cs_n,
-	                                address         => address_bus(7 downto 0),
+	                          address         => address_bus(7 downto 0),
 							        data_out        => rom_data);
 end generate woz65;
 
-basic65: if ROM = "BASIC65"  generate
-	rom: BASIC             port map(clock           => phi2,
-							        cs_n            => rom_cs_n,
-	                                address         => address_bus(13 downto 0),
+basic1: if ROM = "BASIC65"  generate
+	rom: BASIC     port map(clock           => phi2,
+						           cs_n            => rom_cs_n,
+	                          address         => address_bus(13 downto 0),
 							        data_out        => rom_data);
-end generate basic65;
+end generate basic1;
+
+basic2: if ROM = "INTBASIC"  generate
+	rom: INTBASIC   port map(clock           => phi2,
+							       cs_n            => rom_cs_n,
+	                         address         => address_bus(13 downto 0),
+							       data_out        => rom_data);
+end generate basic2;
+
 
 -- END ROM PORT MAP
 											  
-	tape: ACI              port map(reset_n         => cpu_reset_n,
-	                                phi2            => phi2,
-	                                cs_n            => aci_cs_n,
-									address         => address_bus,
-									data_out        => aci_data,
-									tape_in         => aci_in,
-									tape_out        => aci_out);
+	tape: ACI       port map(reset_n         => cpu_reset_n,
+	                         phi2            => phi2,
+	                         cs_n            => aci_cs_n,
+									 address         => address_bus,
+									 data_out        => aci_data,
+									 tape_in         => aci_in,
+									 tape_out        => aci_out);
 										 
-	pia: PIA_UART       generic map(CLK_FREQ_HZ     => 1843200, 
-								 	BAUD_RATE       => BAUD_RATE,
-									BITS            => 8)
-				   	       port map(clock           => phi2,
- 								    serial_clk      => serial_clk,
-								 	reset_n         => cpu_reset_n,
-									cs_n            => pia_cs_n,
-									rw              => rw,
-									address         => address_bus(1 downto 0),
-									data_in         => data_bus,
-									data_out        => pia_data,
-								    rx              => uart_rx,
-								    tx              => uart_tx);
+	pia: PIA_UART generic map(CLK_FREQ_HZ     => 1843200, 
+								 	  BAUD_RATE       => BAUD_RATE,
+									  BITS            => 8)
+				        port map(clock           => phi2,
+ 							        serial_clk      => serial_clk,
+								 	  reset_n         => cpu_reset_n,
+									  cs_n            => pia_cs_n,
+									  rw              => rw,
+									  address         => address_bus(1 downto 0),
+									  data_in         => data_bus,
+									  data_out        => pia_data,
+								     rx              => uart_rx,
+								     tx              => uart_tx);
 	
 											
    aci_cs_n     <= '0' when vma = '1' and address_bus(15 downto 9)   = x"C" & "000"  else '1';   -- IF WOZACI
    pia_cs_n     <= '0' when vma = '1' and address_bus(15 downto 4)   = x"D01"        else '1';   -- REPLICA CONSOLE PIA
 	
-	data_bus <= cpu_data      when rw          = '0' else
-		        rom_data      when rom_cs_n    = '0' else 
-		        aci_data      when aci_cs_n    = '0' else 
-		        ram_data      when ram_cs_n    = '0' else 
-			    pia_data      when pia_cs_n    = '0' else
-		        address_bus(15 downto 8);     
+	data_bus <= cpu_data  when rw          = '0' else
+		         rom_data  when rom_cs_n    = '0' else 
+		         aci_data  when aci_cs_n    = '0' else 
+		         ram_data  when ram_cs_n    = '0' else 
+			      pia_data  when pia_cs_n    = '0' else
+		         address_bus(15 downto 8);     
 
 	
 	process(vma, address_bus)
@@ -246,6 +264,10 @@ end generate basic65;
 					rom_cs_n <= '0';
 				end if;
 			elsif ROM = "BASIC65" then
+				if address_bus(15 downto 13) = "111" then
+					rom_cs_n <= '0';
+				end if;
+			elsif ROM = "INTBASIC" then
 				if address_bus(15 downto 13) = "111" then
 					rom_cs_n <= '0';
 				end if;

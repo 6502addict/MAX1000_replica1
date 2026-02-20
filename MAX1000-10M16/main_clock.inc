@@ -14,14 +14,15 @@
 --on the Quartus Prime software download page.
 
 
-FUNCTION ram_8k 
+FUNCTION main_clock 
 (
-	address[12..0],
-	clock,
-	data[7..0],
-	wren
+	areset,
+	inclk0
 )
 
 RETURNS (
-	q[7..0]
+	c0,
+	c1,
+	c2,
+	locked
 );

@@ -14,8 +14,13 @@ Licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4
 | Item       | Details                             |
 |-----------|-------------------------------------|
 | Board      | Arrow/Trenz MAX1000 TEI0001-04-FBC84A |
-| FPGA       | Intel MAX10 10M08SAU169C8G (8K LE)  |
+| FPGA       | Intel MAX10 10M08SAU169C8G (16K LE)  |
 | SDRAM      | Winbond W9825G6KB-6 (32 MB, BGA)   |
+| Programmer | Arrow USB programmer (on-board)     |
+|-----------|-------------------------------------|
+| Board      | Arrow/Trenz MAX1000 TEI0001-04-DBC87A |
+| FPGA       | Intel MAX10 10M08SAU169C8G (8K LE)  |
+| SDRAM      | Winbond W9864G6KT-6 (8 MB, BGA)   |
 | Programmer | Arrow USB programmer (on-board)     |
 
 ---
@@ -62,29 +67,48 @@ Select via the `ROM` constant in `MAX1000_Replica1.vhd`:
 |------------|------------------------------------------|
 | `WOZMON65` | Wozniak monitor only (bare minimum)      |
 | `BASIC65`  | Wozniak monitor + reduced Applesoft BASIC |
+| `INTBASIC`  | Wozniak monitor + Apple 1 integer BASIC |
 
 To launch BASIC from the monitor prompt: `E000R`
 
 ---
 
-## Configuration
+## Configuration for 16K LE board
 
 All settings are in the **Board Configuration Parameters** section of `MAX1000_Replica1.vhd`.
 
 | Constant         | Default   | Description                              |
 |-----------------|-----------|------------------------------------------|
-| `ROM`            | `BASIC65` | ROM image selection                      |
+| `ROM`            | `INTBASIC` | ROM image selection                      |
 | `RAM_SIZE_KB`    | 48        | RAM visible to 6502 (8 to 48 KB)        |
 | `BAUD_RATE`      | 115200    | Serial port speed                        |
 | `SDRAM_MHZ`      | 120       | SDRAM clock (max 133 for W9825G6KB-6)   |
 | `ROW_BITS`       | 13        | Fixed for W9825G6KB-6                   |
 | `COL_BITS`       | 9         | Fixed for W9825G6KB-6                   |
-| `TRP_NS`         | 15        | Precharge time (ns)                      |
-| `TRCD_NS`        | 15        | RAS-to-CAS delay (ns)                   |
+| `TRP_NS`         | 18        | Precharge time (ns)                      |
+| `TRCD_NS`        | 18        | RAS-to-CAS delay (ns)                   |
 | `TRFC_NS`        | 60        | Refresh cycle time (ns)                 |
 | `CAS_LATENCY`    | 2         | CAS latency cycles                       |
 | `AUTO_PRECHARGE` | false     | Row stays open between accesses         |
 | `AUTO_REFRESH`   | false     | Bridge generates refresh requests       |
+
+## Configuration for 8K LE board
+
+| Constant         | Default   | Description                              |
+|-----------------|-----------|------------------------------------------|
+| `ROM`            | `INTBASIC` | ROM image selection                      |
+| `RAM_SIZE_KB`    | 48        | RAM visible to 6502 (8 to 48 KB)        |
+| `BAUD_RATE`      | 115200    | Serial port speed                        |
+| `SDRAM_MHZ`      | 120       | SDRAM clock (max 133 for W9825G6KB-6)   |
+| `ROW_BITS`       | 12        | Fixed for W9825G6KB-6                   |
+| `COL_BITS`       | 8         | Fixed for W9825G6KB-6                   |
+| `TRP_NS`         | 18        | Precharge time (ns)                      |
+| `TRCD_NS`        | 18        | RAS-to-CAS delay (ns)                   |
+| `TRFC_NS`        | 60        | Refresh cycle time (ns)                 |
+| `CAS_LATENCY`    | 2         | CAS latency cycles                       |
+| `AUTO_PRECHARGE` | false     | Row stays open between accesses         |
+| `AUTO_REFRESH`   | false     | Bridge generates refresh requests       |
+
 
 ### CPU Speed
 
@@ -105,4 +129,4 @@ The PLL `c0` output runs at 4× the desired CPU speed. Edit `main_clock.vhd` to 
 | Date       | Description      |
 |------------|-----------------|
 | 2026/02/17 | Initial version  |
-
+| 2026/02/20 | added support of MAX1000 8K LE 8Mb sdram |

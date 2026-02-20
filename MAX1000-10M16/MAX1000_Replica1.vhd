@@ -267,7 +267,7 @@ end component;
 -- Board Configuration Parameters
 -- Edit this section to reconfigure the machine (see header for details)
 --------------------------------------------------------------------------
-constant ROM              : string   := "BASIC65";   -- "WOZMON65" or "BASIC65"
+constant ROM              : string   := "INTBASIC";   -- "WOZMON65" or "BASIC65"
 constant RAM_SIZE_KB      : positive := 48;           -- RAM visible to 6502 (8 to 48 KB)
 constant BAUD_RATE        : integer  := 115200;       -- Serial speed (match your terminal)
 
@@ -275,8 +275,8 @@ constant BAUD_RATE        : integer  := 115200;       -- Serial speed (match you
 constant SDRAM_MHZ        : integer  := 120;          -- SDRAM clock (max 133 for W9825G6KB-6)
 constant ROW_BITS         : integer  := 13;           -- W9825G6KB-6: 8192 rows
 constant COL_BITS         : integer  := 9;            -- W9825G6KB-6: 512 columns
-constant TRP_NS           : integer  := 15;           -- Precharge time (ns)
-constant TRCD_NS          : integer  := 15;           -- RAS-to-CAS delay (ns)
+constant TRP_NS           : integer  := 18;           -- Precharge time (ns)
+constant TRCD_NS          : integer  := 18;           -- RAS-to-CAS delay (ns)
 constant TRFC_NS          : integer  := 60;           -- Refresh cycle time (ns)
 constant CAS_LATENCY      : integer  := 2;            -- CAS latency (2 safe at 120 MHz)
 

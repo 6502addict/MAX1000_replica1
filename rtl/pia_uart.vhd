@@ -211,6 +211,8 @@ begin
                             data_out <= crb;
                         end if;
 
+						  when others => null;
+
                 end case;
             end if;
         end if;
