@@ -14,7 +14,7 @@
 --on the Quartus Prime software download page.
 
 
-FUNCTION main_clock 
+FUNCTION pll_clock 
 (
 	areset,
 	inclk0
@@ -23,6 +23,5 @@ FUNCTION main_clock
 RETURNS (
 	c0,
 	c1,
-	c2,
 	locked
 );
