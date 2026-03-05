@@ -5,7 +5,6 @@
 *.orig
 
 # Intel Quartus build output
-output_files/
 db/
 incremental_db/
 simulation/
@@ -17,8 +16,6 @@ qdb/
 sofware/4col-vt100
 
 # Quartus compiled/generated files
-*.sof
-*.pof
 *.jic
 *.rbf
 *.ekp

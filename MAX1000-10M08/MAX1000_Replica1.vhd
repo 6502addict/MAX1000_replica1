@@ -183,8 +183,7 @@ end component;
 component Replica1_CORE is
     generic (
         ROM             : string  :=  "WOZMON65";    -- default wozmon65
-        RAM_SIZE_KB     : integer :=  8;             -- 8 to 48kb
-        BAUD_RATE       : integer :=  115200         -- uart speed 1200 to 115200
+        RAM_SIZE_KB     : integer :=  8              -- 8 to 48kb
     );
     port (
         main_clk        : in     std_logic;
@@ -198,6 +197,7 @@ component Replica1_CORE is
         bus_mrdy        : in     std_logic;
         ext_ram_cs_n    : out    std_logic;
         ext_ram_data    : in     std_logic_vector(7  downto 0);
+        uart_format     : in     std_logic_vector(2  downto 0);
         uart_rx         : in     std_logic;
         uart_tx         : out    std_logic;
         tape_out        : out    std_logic;
@@ -307,26 +307,36 @@ begin
     return bits;
 end function;
 
+-- UART format constants (MC6850 CR4:CR3:CR2 encoding)
+constant FMT_7E2 : std_logic_vector(2 downto 0) := "000";
+constant FMT_7O2 : std_logic_vector(2 downto 0) := "001";
+constant FMT_7E1 : std_logic_vector(2 downto 0) := "010";
+constant FMT_7O1 : std_logic_vector(2 downto 0) := "011";
+constant FMT_8N2 : std_logic_vector(2 downto 0) := "100";
+constant FMT_8N1 : std_logic_vector(2 downto 0) := "101";
+constant FMT_8E1 : std_logic_vector(2 downto 0) := "110";
+constant FMT_8O1 : std_logic_vector(2 downto 0) := "111";
 
 --------------------------------------------------------------------------
 -- Board Configuration Parameters 
 --------------------------------------------------------------------------
-constant CPU_CLK_SPEED    : real     := 15.0;                     -- cpu speed 1 to  15 Mhz
-constant CPU_MULTIPLIER   : integer  := 4;                        -- cpu cores uses 4x clock
-constant ROM              : string   := "INTBASIC";
-constant RAM_SIZE_KB      : positive := 48;                       -- DE10-Lite supports up to 48KB
-constant BAUD_RATE        : integer  := 115200;
-constant FAST_CLK_SPEED   : real     := 120.0;
-constant SERIAL_CLK_SPEED : real     := 1.8432;
-constant SDRAM_MHZ        : integer  := 120;
-constant ROW_BITS         : integer  := 12;
-constant COL_BITS         : integer  := 8;
-constant TRP_NS           : integer  := 18;                       -- Precharge time (for PRECHARGE wait)
-constant TRCD_NS          : integer  := 18;                       -- RAS to CAS delay (for ACTIVE→READ/WRITE)
-constant TRFC_NS          : integer  := 60;                       -- Refresh cycle time (for AUTO REFRESH wait)
-constant CAS_LATENCY      : integer  := 2;                        -- CAS Latency: 2 or 3 cycles
-constant AUTO_PRECHARGE   : boolean  := false;
-constant AUTO_REFRESH     : boolean  := false;
+constant CPU_CLK_SPEED    : real                         := 15.0;                     -- cpu speed 1 to  15 Mhz
+constant CPU_MULTIPLIER   : integer                      := 4;                        -- cpu cores uses 4x clock
+constant ROM              : string                       := "INTBASIC";
+constant RAM_SIZE_KB      : positive                     := 48;                       -- DE10-Lite supports up to 48KB
+constant BAUD_RATE        : integer                      := 115200;
+constant FAST_CLK_SPEED   : real                         := 120.0;
+constant SERIAL_CLK_SPEED : real                         := 1.8432;
+constant SERIAL_FORMAT    : std_logic_vector(2 downto 0) := FMT_8N2;
+constant SDRAM_MHZ        : integer                      := 120;
+constant ROW_BITS         : integer                      := 12;
+constant COL_BITS         : integer                      := 8;
+constant TRP_NS           : integer                      := 18;                       -- Precharge time (for PRECHARGE wait)
+constant TRCD_NS          : integer                      := 18;                       -- RAS to CAS delay (for ACTIVE→READ/WRITE)
+constant TRFC_NS          : integer                      := 60;                       -- Refresh cycle time (for AUTO REFRESH wait)
+constant CAS_LATENCY      : integer                      := 2;                        -- CAS Latency: 2 or 3 cycles
+constant AUTO_PRECHARGE   : boolean                      := false;
+constant AUTO_REFRESH     : boolean                      := false;
 
 -- constant computed from other constants
 constant ADDR_BITS        : integer  := kb_to_addr_bits(RAM_SIZE_KB);
@@ -398,8 +408,7 @@ begin
     
 
     ap1: Replica1_CORE                              generic map(ROM                =>  ROM,         -- default wozmon65
-                                                                RAM_SIZE_KB        =>  RAM_SIZE_KB, -- 8 to 48Kb 
-                                                                BAUD_RATE          =>  BAUD_RATE)   -- uart speed 1200 to 115200
+                                                                RAM_SIZE_KB        =>  RAM_SIZE_KB) -- 8 to 48Kb 
                                                     port map(main_clk              =>  cpu_clk,
                                                                 serial_clk         =>  serial_clk,
                                                                 reset_n            =>  reset_n,
@@ -411,6 +420,7 @@ begin
                                                                 bus_mrdy           =>  mrdy,
                                                                 ext_ram_cs_n       =>  ram_cs_n,
                                                                 ext_ram_data       =>  ram_data,
+                                                                uart_format        =>  SERIAL_FORMAT,
                                                                 uart_rx            =>  serial_rx,
                                                                 uart_tx            =>  serial_tx,
                                                                 tape_out           =>  tape_out,
